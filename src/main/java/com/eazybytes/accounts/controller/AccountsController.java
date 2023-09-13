@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -85,6 +86,16 @@ public class AccountsController {
 		customerDetails.setLoans(loans);
 //		customerDetails.setCards(cards);
 		return customerDetails;
+	}
+
+	@GetMapping("/sayHello")
+	@RateLimiter(name="sayHello", fallbackMethod = "sayHelloFallBack")
+	public String sayHello() {
+		return "Hello, Welcome to EazyBank";
+	}
+
+	private String sayHelloFallBack(Throwable t) {
+		return "Hi, this is fallback for Hello!";
 	}
 
 }
