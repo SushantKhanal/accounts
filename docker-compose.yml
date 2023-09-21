@@ -3,7 +3,7 @@ version: "3.8"
 services:
 
   accounts:
-    image: sushantkhanal/accounts:latest
+    image: eazybytes/accounts:latest
     mem_limit: 700m
     ports:
       - "8080:8080"
@@ -11,7 +11,7 @@ services:
       - eazybank-network
     
   loans:
-    image: sushantkhanal/loans:latest
+    image: eazybytes/loans:latest
     mem_limit: 700m
     ports:
       - "8090:8090"
@@ -19,7 +19,7 @@ services:
       - eazybank-network
     
   cards:
-    image: sushantkhanal/cards:latest
+    image: eazybytes/cards:latest
     mem_limit: 700m
     ports:
       - "9000:9000"

@@ -15,5 +15,5 @@ import com.eazybytes.accounts.model.Customer;
 public interface CardsFeignClient {
 
 	@RequestMapping(method = RequestMethod.POST, value = "myCards", consumes = "application/json")
-	List<Cards> getCardDetails(@RequestHeader("eazybank-correlation-id") String correlationid, @RequestBody Customer customer);
+	List<Cards> getCardDetails(@RequestHeader("eazybank-correlation-id") String correlationid,@RequestBody Customer customer);
 }
