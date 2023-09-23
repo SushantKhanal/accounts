@@ -1,13 +1,20 @@
 package com.eazybytes.accounts.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import com.eazybytes.accounts.entity.Accounts;
+import jakarta.transaction.Transactional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
-import com.eazybytes.accounts.model.Accounts;
+import java.util.Optional;
 
 @Repository
-public interface AccountsRepository extends CrudRepository<Accounts, Long> {
+public interface AccountsRepository extends JpaRepository<Accounts, Long> {
 
-	Accounts findByCustomerId(int customerId);
+    Optional<Accounts> findByCustomerId(Long customerId);
+
+    @Transactional
+    @Modifying
+    void deleteByCustomerId(Long customerId);
 
 }
