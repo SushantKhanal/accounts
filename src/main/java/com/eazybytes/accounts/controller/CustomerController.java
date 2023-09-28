@@ -61,8 +61,9 @@ public class CustomerController {
                                                                    String mobileNumber) {
         logger.debug("fetchCustomerDetails method start");
         CustomerDetailsDto customerDetailsDto = iCustomersService.fetchCustomerDetails(mobileNumber, correlationId);
-                logger.debug("fetchCustomerDetails method end");
+        logger.debug("fetchCustomerDetails method end");
         return ResponseEntity.status(HttpStatus.SC_OK).body(customerDetailsDto);
+
     }
 
 
