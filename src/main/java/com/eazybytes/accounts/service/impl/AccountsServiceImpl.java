@@ -2,6 +2,7 @@ package com.eazybytes.accounts.service.impl;
 
 import com.eazybytes.accounts.constants.AccountsConstants;
 import com.eazybytes.accounts.dto.AccountsDto;
+import com.eazybytes.accounts.dto.AccountsMsgDto;
 import com.eazybytes.accounts.dto.CustomerDto;
 import com.eazybytes.accounts.entity.Accounts;
 import com.eazybytes.accounts.entity.Customer;
@@ -13,7 +14,10 @@ import com.eazybytes.accounts.repository.AccountsRepository;
 import com.eazybytes.accounts.repository.CustomerRepository;
 import com.eazybytes.accounts.service.IAccountsService;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.cloud.stream.function.StreamBridge;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -23,8 +27,11 @@ import java.util.Random;
 @AllArgsConstructor
 public class AccountsServiceImpl  implements IAccountsService {
 
+    private static final Logger log = LoggerFactory.getLogger(AccountsServiceImpl.class);
+
     private AccountsRepository accountsRepository;
     private CustomerRepository customerRepository;
+    private final StreamBridge streamBridge; //since we have used @AllArgsConstructor, it is going to autowire this
 
     /**
      * @param customerDto - CustomerDto Object
@@ -38,7 +45,21 @@ public class AccountsServiceImpl  implements IAccountsService {
                     +customerDto.getMobileNumber());
         }
         Customer savedCustomer = customerRepository.save(customer);
-        accountsRepository.save(createNewAccount(savedCustomer));
+        Accounts savedAccount = accountsRepository.save(createNewAccount(savedCustomer));
+        sendCommunication(savedAccount, savedCustomer);
+    }
+
+    private void sendCommunication(Accounts account, Customer customer) {
+        var accountsMsgDto = new AccountsMsgDto(
+                account.getAccountNumber(),
+                customer.getName(),
+                customer.getEmail(),
+                customer.getMobileNumber()
+        );
+        log.info("Sending Communication request for the details: {}", accountsMsgDto);
+        var result = streamBridge.send("sendCommunications-out-0", accountsMsgDto);
+//        with this the message will be received by the exchange inside the rabbitmq
+        log.info("Is the communication request successfully processed ?: {}", result);
     }
 
     /**
