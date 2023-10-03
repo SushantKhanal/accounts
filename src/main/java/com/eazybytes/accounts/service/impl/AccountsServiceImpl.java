@@ -55,9 +55,9 @@ public class AccountsServiceImpl  implements IAccountsService {
                 customer.getName(),
                 customer.getEmail(),
                 customer.getMobileNumber()
-        );
+        ); //sendCommunication-out-0
         log.info("Sending Communication request for the details: {}", accountsMsgDto);
-        var result = streamBridge.send("sendCommunications-out-0", accountsMsgDto);
+        var result = streamBridge.send("sendCommunication-out-0", accountsMsgDto);
 //        with this the message will be received by the exchange inside the rabbitmq
         log.info("Is the communication request successfully processed ?: {}", result);
     }
@@ -132,6 +132,20 @@ public class AccountsServiceImpl  implements IAccountsService {
         accountsRepository.deleteByCustomerId(customer.getCustomerId());
         customerRepository.deleteById(customer.getCustomerId());
         return true;
+    }
+
+    @Override
+    public boolean updateCommunicationStatus(Long accountNumber) {
+        boolean isUpdated = false;
+        if(accountNumber != null) {
+            Accounts accounts = accountsRepository.findById(accountNumber).orElseThrow(
+                    ()-> new ResourceNotFoundException("Account", "AccountNumber", accountNumber.toString())
+            );
+            accounts.setCommunicationSw(true);
+            accountsRepository.save(accounts);
+            isUpdated = true;
+        }
+        return isUpdated;
     }
 
 
