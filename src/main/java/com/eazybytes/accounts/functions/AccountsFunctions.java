@@ -8,22 +8,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.function.Consumer;
 
-// @Configuration
-// public class AccountsFunctions {
-
-//     private static final Logger log = LoggerFactory.getLogger(AccountsFunctions.class);
-
-//     @Bean
-//     public Consumer<Long> updateCommunication(IAccountsService accountsService) {
-//         return accountNumber -> {
-//             log.info("Updating Communication status for the account number:" + accountNumber.toString());
-//             //updateCommunicationStatus
-//             accountsService.updateCommunicationStatus(accountNumber);
-//         };
-//     }
-
-// }
-
 @Configuration
 public class AccountsFunctions {
 

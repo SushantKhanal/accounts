@@ -16,8 +16,8 @@ import com.eazybytes.accounts.service.IAccountsService;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class AccountsServiceImpl  implements IAccountsService {
 
     private AccountsRepository accountsRepository;
     private CustomerRepository customerRepository;
-    private final StreamBridge streamBridge; //since we have used @AllArgsConstructor, it is going to autowire this
+    private final StreamBridge streamBridge;
 
     /**
      * @param customerDto - CustomerDto Object
@@ -50,16 +50,11 @@ public class AccountsServiceImpl  implements IAccountsService {
     }
 
     private void sendCommunication(Accounts account, Customer customer) {
-        var accountsMsgDto = new AccountsMsgDto(
-                account.getAccountNumber(),
-                customer.getName(),
-                customer.getEmail(),
-                customer.getMobileNumber()
-        ); //sendCommunication-out-0
+        var accountsMsgDto = new AccountsMsgDto(account.getAccountNumber(), customer.getName(),
+                customer.getEmail(), customer.getMobileNumber());
         log.info("Sending Communication request for the details: {}", accountsMsgDto);
         var result = streamBridge.send("sendCommunication-out-0", accountsMsgDto);
-//        with this the message will be received by the exchange inside the rabbitmq
-        log.info("Is the communication request successfully processed ?: {}", result);
+        log.info("Is the Communication request successfully triggered ? : {}", result);
     }
 
     /**
@@ -134,18 +129,22 @@ public class AccountsServiceImpl  implements IAccountsService {
         return true;
     }
 
+    /**
+     * @param accountNumber - Long
+     * @return boolean indicating if the update of communication status is successful or not
+     */
     @Override
     public boolean updateCommunicationStatus(Long accountNumber) {
         boolean isUpdated = false;
-        if(accountNumber != null) {
+        if(accountNumber !=null ){
             Accounts accounts = accountsRepository.findById(accountNumber).orElseThrow(
-                    ()-> new ResourceNotFoundException("Account", "AccountNumber", accountNumber.toString())
+                    () -> new ResourceNotFoundException("Account", "AccountNumber", accountNumber.toString())
             );
             accounts.setCommunicationSw(true);
             accountsRepository.save(accounts);
             isUpdated = true;
         }
-        return isUpdated;
+        return  isUpdated;
     }
 
 
